@@ -1,0 +1,4 @@
+dockers/*
+api/logs/*
+api/vendor/*
+api/composer.lock

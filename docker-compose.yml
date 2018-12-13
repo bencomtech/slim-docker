@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  lb:
+    image: bencomtech/nginx:1.12
+    ports:
+      - 80:8080
+    depends_on:
+      - api
+      - phpmyadmin
+    volumes:
+      - ./dockers/lb/logs:/opt/bitnami/nginx/logs
+      - ./dockers/lb/nginx:/bitnami/nginx
+
+  api:
+    image: bencomtech/nginx:1.12
+    depends_on:
+      - api-phpfpm
+    volumes:
+      - ./dockers/api/logs:/opt/bitnami/nginx/logs
+      - ./dockers/api/nginx:/bitnami/nginx
+      - ./api:/app
+
+  api-phpfpm:
+    image: bencomtech/php-fpm:7.1
+    volumes:
+      - ./dockers/api/phpfpm:/bitnami/php-fpm
+      - ./api:/app
+
+  mariadb:
+    image: bencomtech/mariadb:10.2
+    volumes:
+      - ./dockers/db/data:/bitnami/mariadb
+    environment:
+      - MARIADB_DATABASE=slim
+      - MARIADB_USER=slim_user
+      - MARIADB_PASSWORD=slim_password
+      - MARIADB_ROOT_PASSWORD=password
+
+  phpmyadmin:
+    image: bencomtech/phpmyadmin:4.7
+    depends_on:
+      - mariadb
